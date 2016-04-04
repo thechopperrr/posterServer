@@ -394,7 +394,7 @@ public String disLikePost(String numStr) throws Exception {
 		tempResource = new TempResource();
 	}
 	int num = Integer.parseInt( request.getParameter("postId"));
-	System.out.println("disLiking");
+	System.out.println("disLiking ");
 	System.out.println(num);
 	String user =  request.getParameter("userMail");
 	System.out.println(user);
