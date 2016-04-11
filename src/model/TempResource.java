@@ -27,7 +27,7 @@ public void make(){
 public ArrayList<Coment> makeComents(){
 	ArrayList<Coment> ar = new ArrayList<Coment>();
 	for(int i = 0; i < 5; i++){
-		Coment c = new Coment(users.get(0).getMail(),"coment"+i, new Date());
+		Coment c = new Coment( 0, users.get(0).getMail(),"coment"+i, new Date());
 		ar.add(c);
 	}
 	return ar;
@@ -45,6 +45,9 @@ public ArrayList<Post> getPosts(int num){
 	ArrayList<Post> arr = new ArrayList<Post>();
 	for(int i=0; i< num; i++){
 		Post post = new Post(i,users.get(0), "post text"+i, this.getLikes(), new Date(), this.makeComents());
+		for(int j = 0; j<post.getComents().size(); j++){
+			post.getComents().get(j).setPostId(post.getPostId());
+		}
 		arr.add(post);
 	}
 	return arr;
@@ -100,6 +103,33 @@ public boolean isValidUser(User usr){
 		}
 	}
 	return false;
+}
+
+public boolean addComent(Coment coment){
+	for(int i=0; i < this.posts.size(); i++){
+		if(posts.get(i).getPostId() == coment.getPostId()){
+			posts.get(i).getComents().add(coment);
+			return true;
+		}
+	}
+	return false;
+}
+
+public boolean addPost(Post post){
+	this.posts.add(post);
+	return true;
+}
+
+public String makeComent(Coment coment){
+	if(this.addComent(coment))
+		return "YES";
+	else return "NO";
+}
+
+public String makePost(Post post){
+	if(this.addPost(post))
+		return "YES";
+	else return "NO";
 }
 
 public boolean isSuchUser(String name){

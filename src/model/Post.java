@@ -28,6 +28,10 @@ public class Post {
 		this.postId = postId; 
 	}
 	
+	public Post(){
+		
+	}
+	
 	public String toJson() throws JsonParseException, JsonMappingException, IOException{
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		String date = df.format(this.postDate);

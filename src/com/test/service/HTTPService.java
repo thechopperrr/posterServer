@@ -355,6 +355,40 @@ public String forgetPass(User usr) throws Exception {
 }
 
 @POST
+@Path("makeComent")
+@Consumes(MediaType.APPLICATION_JSON)
+public String makeComent(Coment com) throws Exception {
+	
+	if(tempResource == null){
+		tempResource = new TempResource();
+	}
+	try{
+			  return tempResource.makeComent(com);
+		   
+		 }catch(Exception e){
+		  e.printStackTrace();
+		  return "NO";
+		 }
+}
+
+@POST
+@Path("makePost")
+@Consumes(MediaType.APPLICATION_JSON)
+public String makePost(Post post) throws Exception {
+	
+	if(tempResource == null){
+		tempResource = new TempResource();
+	}
+	try{
+			  return tempResource.makePost(post);
+		   
+		 }catch(Exception e){
+		  e.printStackTrace();
+		  return "NO";
+		 }
+}
+
+@POST
 @Path("nextFive")
 @Produces(MediaType.APPLICATION_JSON)
 public ArrayList<Post> getNextFive(String numStr) throws Exception {

@@ -9,13 +9,18 @@ public class Coment {
 	private String userMail;
 	private String comentText;
 	private Date date;
+	private long postId;
 	
+	public Coment(){
+		
+	}
 	
-	public Coment (String mail, String text,Date postDate)
+	public Coment (long id, String mail, String text,Date postDate)
 	{
 		userMail = mail;
 		comentText = text;
 		date = postDate;
+		postId = id;
 	}
 	public String getUserMail() {
 		return userMail;
@@ -47,6 +52,12 @@ public class Coment {
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		String json = "{\"userMail\":\"" + this.userMail + "\", \"comentText\":\"" + this.comentText + "\", \"comentDate\":\""+df.format(this.date)+"\"}";
 		return json;
+	}
+	public long getPostId() {
+		return postId;
+	}
+	public void setPostId(long postId) {
+		this.postId = postId;
 	}
 
 }
