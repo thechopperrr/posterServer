@@ -125,7 +125,7 @@ public String authenticateHTTPPost(String x) throws Exception{
   String header = x;
   decoded = header;
    String [] dataArray = decoded.split("#"); 
-  user.setId(dataArray[0]);
+  user.setMail(dataArray[0]);
   user.setPass(dataArray[1]);
   System.out.println("Server:"+decoded);
    
@@ -235,7 +235,7 @@ public String changePassHTTPHeaderPost(String x) throws Exception{
   decoded = header;
    String [] dataArray = decoded.split("#");
    
-  user.setId(dataArray[0]);
+  user.setMail(dataArray[0]);
   user.setPass(dataArray[1]);
    
  }catch(Exception e){
@@ -288,17 +288,19 @@ public String logOutHttps(String x) throws Exception {
 @POST
 @Path("validateUser")
 @Consumes(MediaType.APPLICATION_JSON)
-public String validateUser(User usr) throws Exception {
+@Produces(MediaType.APPLICATION_JSON)
+public User validateUser(User usr) throws Exception {
 
 	if(tempResource == null){
 		tempResource = new TempResource();
 	}
 	
-		if(tempResource.isValidUser(usr)){
-			return "YES";
-		}
-		else
-			return "NO";
+//		if(tempResource.isValidUser(usr)){
+//			return "YES";
+//		}
+//		else
+//			return "NO";
+		return tempResource.isValidUserGetInstance(usr);
 }
 
 @POST
@@ -434,6 +436,26 @@ public String disLikePost(String numStr) throws Exception {
 	System.out.println(user);
 	return tempResource.disLikePostWithId(num,user);
 }
+
+@GET
+@Path("newImage")
+@Consumes(MediaType.APPLICATION_JSON)
+public String setImageToUser(String str) throws Exception {
+	
+	if(tempResource == null){
+		tempResource = new TempResource();
+	}
+	String imageUrl = request.getParameter("imageUrl");
+	System.out.println("saveImage ");
+	System.out.println(imageUrl);
+	String user =  request.getParameter("userMail");
+	System.out.println(user);
+	if(tempResource.saveImageToUser(imageUrl,user)){
+		return imageUrl;
+	}
+	return "";
+}
+
 //@POST
 //@Path("hhh")
 //@Produces(MediaType.APPLICATION_JSON)
@@ -456,7 +478,7 @@ public String disLikePost(String numStr) throws Exception {
 
 public Coment createComent(User usr, String text){
 	Coment coment = new Coment();
-	coment.setUserMail(usr.getId());
+	coment.setUserMail(usr.getMail());
 	coment.setComentText(text);
 	coment.setDate(Calendar.getInstance().getTime());
 	return coment;
@@ -464,7 +486,7 @@ public Coment createComent(User usr, String text){
 
 public User createUser(String name){
 	User user = new User();
-	user.setId(name);
+	user.setMail(name);
 	user.setPass("123");
 	return user;
 }

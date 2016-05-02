@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="/Users/interns/Documents/DIPLOMNA/mysql-connector-java-5.1.32/mysql-connector-java-5.1.32-bin.jar"/>
 	<classpathentry kind="lib" path="/Users/interns/Downloads/javamail-1.4.7/lib/dsn.jar"/>
 	<classpathentry kind="lib" path="/Users/interns/Downloads/javamail-1.4.7/lib/pop3.jar"/>
 	<classpathentry kind="lib" path="/Users/interns/Downloads/javamail-1.4.7/lib/gimap.jar"/>
@@ -21,5 +20,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/interns/Documents/apache-tomcat-7.0.68/bin/tomcat-juli.jar"/>
 	<classpathentry kind="lib" path="/Users/interns/Documents/workspace/gson-2.6.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -16,8 +16,8 @@ public void make(){
 	posts = new ArrayList<Post>();
 	users = new ArrayList<User>();
 	
-	User user1 = new User("hose@abv.bg", "123");
-	User user2 = new User("konsunela@abv.bg", "123");
+	User user1 = new User("hose@abv.bg", "123", "dadada");
+	User user2 = new User("konsunela@abv.bg", "123", "dadada");
 	
 	users.add(user1);
 	users.add(user2);
@@ -105,6 +105,17 @@ public boolean isValidUser(User usr){
 	return false;
 }
 
+public User isValidUserGetInstance(User usr){
+	for(int i=0; i< this.users.size(); i++){
+		if(usr.mail.equals(this.users.get(i).mail)){
+			if(usr.pass.equals(this.users.get(i).pass)){
+				return this.users.get(i);
+			}
+		}
+	}
+	return new User();
+}
+
 public boolean addComent(Coment coment){
 	for(int i=0; i < this.posts.size(); i++){
 		if(posts.get(i).getPostId() == coment.getPostId()){
@@ -141,8 +152,10 @@ public boolean isSuchUser(String name){
 	return false;
 }
 
-public boolean register(User usr){
+public boolean register(User usr) throws Exception{
 	this.users.add(usr);
+	DataBaseProvider data = new DataBaseProvider();
+	data.addUser(usr);
 	return true;
 }
 
@@ -153,6 +166,16 @@ public String getPassForUser(String email){
 		}
 	}
 	return "error";
+}
+
+public boolean saveImageToUser(String url,String email){
+	for(int i=0; i< this.users.size(); i++){
+		if(email.equals(this.users.get(i).mail)){
+			this.users.get(i).imageUrl = url;
+			return true;
+		}
+	}
+	return false;
 }
 }
 

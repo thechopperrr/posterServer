@@ -12,14 +12,16 @@ import com.google.gson.GsonBuilder;
 public class User {
 	public String mail;
 	public String pass;
+	public String imageUrl;
 	
 	public User() {
 	}
 	
-	public User (String ident, String pss)
+	public User (String ident, String pss, String image)
 	{
 		pass= pss;
 		mail = ident;
+		imageUrl = image;
 	}
 	public String getMail() {
 		return mail;
