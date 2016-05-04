@@ -326,6 +326,7 @@ public String register(User usr) throws Exception {
 	if(tempResource == null){
 		tempResource = new TempResource();
 	}
+	System.out.println("register http");
 		if(tempResource.register(usr)){
 			return "YES";
 		}

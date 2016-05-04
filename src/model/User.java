@@ -21,7 +21,7 @@ public class User {
 	{
 		pass= pss;
 		mail = ident;
-		imageUrl = image;
+		setImageUrl(image);
 	}
 	public String getMail() {
 		return mail;
@@ -50,6 +50,14 @@ public class User {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String j = gson.toJson(us);
         System.out.print(j);
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 	
 }

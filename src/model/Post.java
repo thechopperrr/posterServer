@@ -32,6 +32,15 @@ public class Post {
 		
 	}
 	
+	public String likesToString() {
+		String likesStr = "";
+		for(int i=0; i<this.likes.size();i++){
+			likesStr += ",";
+			likesStr +=likes.get(i);
+		}
+		return likesStr;
+	}
+
 	public String toJson() throws JsonParseException, JsonMappingException, IOException{
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		String date = df.format(this.postDate);

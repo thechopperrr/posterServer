@@ -6,9 +6,11 @@ import java.util.Date;
 public class TempResource {
 	public  ArrayList<Post> posts;
 	public  ArrayList<User> users;
+	public DataBaseProvider dataBase;
 	
 	public TempResource(){
 		this.make();
+		 dataBase = new DataBaseProvider();
 	}
 	
 	
@@ -94,23 +96,23 @@ public String disLikePostWithId(long id, String user){
 }
 
 
-public boolean isValidUser(User usr){
-	for(int i=0; i< this.users.size(); i++){
-		if(usr.mail.equals(this.users.get(i).mail)){
-			if(usr.pass.equals(this.users.get(i).pass)){
-				return true;
-			}
+public boolean isValidUser(User usr) throws Exception{
+	System.out.println("isValidUser");
+	User user = dataBase.getUser(usr.getMail());
+	if(user != null){
+		if(user.getPass().equals(usr.getPass())){
+			return true;
 		}
 	}
 	return false;
 }
 
-public User isValidUserGetInstance(User usr){
-	for(int i=0; i< this.users.size(); i++){
-		if(usr.mail.equals(this.users.get(i).mail)){
-			if(usr.pass.equals(this.users.get(i).pass)){
-				return this.users.get(i);
-			}
+public User isValidUserGetInstance(User usr) throws Exception{
+	System.out.println("isValidUserGetInstance");
+	User user = dataBase.getUser(usr.getMail());
+	if(user != null){
+		if(user.getPass().equals(usr.getPass())){
+			return user;
 		}
 	}
 	return new User();
@@ -137,45 +139,53 @@ public String makeComent(Coment coment){
 	else return "NO";
 }
 
-public String makePost(Post post){
+public String makePost(Post post) throws Exception{
+	this.dataBase.addPost(post);
 	if(this.addPost(post))
 		return "YES";
 	else return "NO";
 }
 
-public boolean isSuchUser(String name){
-	for(int i=0; i< this.users.size(); i++){
-		if(name.equals(this.users.get(i).mail)){
-			return true;
-		}
+public boolean isSuchUser(String name) throws Exception{
+	
+	System.out.println("isSuchUser");
+	User tempUser = dataBase.getUser(name);
+	if( tempUser == null){
+	
+		return false;
 	}
-	return false;
-}
-
-public boolean register(User usr) throws Exception{
-	this.users.add(usr);
-	DataBaseProvider data = new DataBaseProvider();
-	data.addUser(usr);
 	return true;
 }
 
-public String getPassForUser(String email){
-	for(int i=0; i< this.users.size(); i++){
-		if(email.equals(this.users.get(i).mail)){
-			return this.users.get(i).pass;
-		}
+public boolean register(User usr) throws Exception{
+	
+	User tempUser = dataBase.getUser(usr.getMail());
+	if( tempUser == null){
+		System.out.println("adding user");
+		dataBase.addUser(usr);
+		//todo remove
+		this.users.add(usr);
+		return true;
 	}
-	return "error";
+	else {
+		System.out.println("user exists");
+		return false;
+	}
 }
 
-public boolean saveImageToUser(String url,String email){
-	for(int i=0; i< this.users.size(); i++){
-		if(email.equals(this.users.get(i).mail)){
-			this.users.get(i).imageUrl = url;
-			return true;
-		}
+public String getPassForUser(String email) throws Exception{
+	System.out.println("getPassForUser");
+	User tempUser = dataBase.getUser(email);
+	if( tempUser == null){
+		return "error";
 	}
-	return false;
+	else {
+		return tempUser.getPass();
+	}
+}
+
+public boolean saveImageToUser(String url,String email) throws Exception{
+	return dataBase.setUserImageUrl(email, url);
 }
 }
 
