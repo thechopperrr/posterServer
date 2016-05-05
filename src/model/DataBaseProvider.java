@@ -6,6 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -48,9 +52,9 @@ public class DataBaseProvider {
 		      statement = connect.createStatement();
 		      String query = "SELECT MAX(postId) FROM Posts;";
 		      System.out.println(query);
-		      resultSet = statement.executeQuery(query);
-		      while (resultSet.next()) {
-		    	  result = ((Number)resultSet.getObject(1)).intValue();;
+		      ResultSet resultS = statement.executeQuery(query);
+		      while (resultS.next()) {
+		    	  result = ((Number)resultS.getObject(1)).intValue();;
 		    	 System.out.println(result);
 			    }
 		      
@@ -88,12 +92,12 @@ public class DataBaseProvider {
 		      statement = connect.createStatement();
 		      String query = "SELECT mail, pass, imageUrl FROM Users WHERE mail = '"+ mail +"';";
 		      System.out.println(query);
-		      resultSet = statement.executeQuery(query);
-		      while (resultSet.next()) {
+		      ResultSet result = statement.executeQuery(query);
+		      while (result.next()) {
 		    	  user = new User();
-			      user.setMail(resultSet.getString("mail"));
-			      user.setPass(resultSet.getString("pass"));
-			      user.setImageUrl(resultSet.getString("imageUrl"));
+			      user.setMail(result.getString("mail"));
+			      user.setPass(result.getString("pass"));
+			      user.setImageUrl(result.getString("imageUrl"));
 			    }
 		      
 		    } catch (Exception e) {
@@ -102,6 +106,65 @@ public class DataBaseProvider {
 		      close();
 		    }
 		  return user;
+	  }
+	  
+	  public ArrayList<Post> getNextFivePosts( int index) throws Exception
+	  {
+		  System.out.println("get nex five with index: "+index);
+		  ArrayList<Post> posts = new ArrayList<Post>();
+		  Post temPost;
+		  int lastPostId = this.getNextMaxPostId() - 1;
+		  int endIndex = lastPostId - index;
+		  int startIndex;
+		  if((endIndex -5) < 0)
+			  startIndex = 0;
+		  else
+			  startIndex = endIndex -5;
+		  try {
+			  endIndex = endIndex + 1;
+			  startIndex = startIndex -1;
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "SELECT userMail, postText, likes, postDate, postId FROM Posts WHERE postId < "+ endIndex +" AND postId > " + startIndex +";";
+		      System.out.println(query);
+		      resultSet = statement.executeQuery(query);
+		      System.out.println(resultSet);
+		      while (resultSet.next()) {
+		    	  temPost = new Post();
+		    	  temPost.setUser(this.getUser(resultSet.getString("userMail")));
+		    	  temPost.setPostText(resultSet.getString("postText"));
+		    	  temPost.setLikes(stringToLikes(resultSet.getString("likes")));
+		    	  temPost.setPostDate(dateFromString(resultSet.getString("postDate")));
+		    	  temPost.setPostId(resultSet.getLong("postId"));
+		    	  System.out.println(temPost);
+		    	  posts.add(temPost);
+			    }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		      close();
+		    }
+		  return posts;
+	  }
+	  
+	  public Date dateFromString(String dateString) throws ParseException{
+
+		  DateFormat formatter ; 
+		  Date date ; 
+		  formatter = new SimpleDateFormat("yyy-MM-dd hh:mm:ss");
+		  date = formatter.parse(dateString);
+		  return date;
+	  }
+	  
+	  public ArrayList<String> stringToLikes(String likesStr){
+		  
+		  ArrayList<String> likes = new ArrayList<String>();
+		  String[] parts = likesStr.split(",");
+		  for(int i=0; i< parts.length; i++){
+			likes.add(parts[i]);  
+		  }
+		  return likes;
 	  }
 	  
 	  public boolean setUserImageUrl (String mail, String imageUrl) throws Exception

@@ -55,22 +55,24 @@ public ArrayList<Post> getPosts(int num){
 	return arr;
 }
 
-public ArrayList<Post> getNextFive(int start){
+public ArrayList<Post> getNextFive(int start) throws Exception{
 	ArrayList<Post> arr = new ArrayList<Post>();
+	ArrayList<Post> tempPosts = dataBase.getNextFivePosts(start);
+	return tempPosts;
 	
-	if(start > posts.size())
-		return arr;
-	int end = start + 5;
-	if(end > posts.size())
-		end = posts.size();
-	for(int i=start; i<end; i ++){
-		if(i > posts.size())
-			break;
-		else {
-			arr.add(posts.get(i));
-		}
-	}
-	return arr;
+//	if(start > tempPosts.size())
+//		return arr;
+//	int end = start + 5;
+//	if(end > tempPosts.size())
+//		end = tempPosts.size();
+//	for(int i=start; i<end; i ++){
+//		if(i > tempPosts.size())
+//			break;
+//		else {
+//			arr.add(tempPosts.get(i));
+//		}
+//	}
+//	return arr;
 }
 
 public String likePostWithId(long id, String user){
