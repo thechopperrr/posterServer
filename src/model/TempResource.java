@@ -75,24 +75,16 @@ public ArrayList<Post> getNextFive(int start) throws Exception{
 //	return arr;
 }
 
-public String likePostWithId(long id, String user){
-	for(int i=0; i< posts.size(); i++){
-		if(posts.get(i).getPostId() == id){
-			posts.get(i).getLikes().add(user);
-			return "YES";
-		}
-			
+public String likePostWithId(int id, String user) throws Exception{
+	if(dataBase.likePost(id, user)){
+		return "YES";
 	}
 	return "NO";
 }
 
-public String disLikePostWithId(long id, String user){
-	for(int i=0; i< posts.size(); i++){
-		if(posts.get(i).getPostId() == id){
-			if(posts.get(i).getLikes().remove(user))
-				return "YES";
-		}
-			
+public String disLikePostWithId(int id, String user) throws Exception{
+	if(dataBase.disLikePost(id, user)){
+		return "YES";
 	}
 	return "NO";
 }
@@ -103,10 +95,19 @@ public boolean isValidUser(User usr) throws Exception{
 	User user = dataBase.getUser(usr.getMail());
 	if(user != null){
 		if(user.getPass().equals(usr.getPass())){
-			return true;
+			if(dataBase.isValideUser(user.getMail()))
+				return true;
 		}
 	}
 	return false;
+}
+
+public boolean validateUser(String  userName) throws Exception{
+	
+	if(dataBase.validateUser(userName))
+		return true;
+	return false;
+	
 }
 
 public User isValidUserGetInstance(User usr) throws Exception{
@@ -114,20 +115,16 @@ public User isValidUserGetInstance(User usr) throws Exception{
 	User user = dataBase.getUser(usr.getMail());
 	if(user != null){
 		if(user.getPass().equals(usr.getPass())){
-			return user;
+			if(dataBase.isValideUser(user.getMail()))
+				return user;
 		}
 	}
 	return new User();
 }
 
-public boolean addComent(Coment coment){
-	for(int i=0; i < this.posts.size(); i++){
-		if(posts.get(i).getPostId() == coment.getPostId()){
-			posts.get(i).getComents().add(coment);
-			return true;
-		}
-	}
-	return false;
+public boolean addComent(Coment coment) throws Exception{
+	
+	 return dataBase.addComent(coment);
 }
 
 public boolean addPost(Post post){
@@ -135,7 +132,7 @@ public boolean addPost(Post post){
 	return true;
 }
 
-public String makeComent(Coment coment){
+public String makeComent(Coment coment) throws Exception{
 	if(this.addComent(coment))
 		return "YES";
 	else return "NO";
@@ -165,8 +162,6 @@ public boolean register(User usr) throws Exception{
 	if( tempUser == null){
 		System.out.println("adding user");
 		dataBase.addUser(usr);
-		//todo remove
-		this.users.add(usr);
 		return true;
 	}
 	else {

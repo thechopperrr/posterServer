@@ -65,6 +65,29 @@ public class DataBaseProvider {
 		    }
 		  return result + 1;
 	  }
+	
+	public int getNextMaxComentId() throws Exception
+	{
+		  int result = 0;
+		  try {
+			  
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "SELECT MAX(comentId) FROM Coments;";
+		      System.out.println(query);
+		      ResultSet resultS = statement.executeQuery(query);
+		      while (resultS.next()) {
+		    	  result = ((Number)resultS.getObject(1)).intValue();;
+		    	 System.out.println(result);
+			    }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		    	close();
+		    }
+		  return result + 1;
+	  }
 	  
 	  public boolean addUser (User user) throws Exception
 	  {
@@ -72,8 +95,9 @@ public class DataBaseProvider {
 		  try {
 		      connect = connect();
 		      statement = connect.createStatement();
-		      String query ="INSERT INTO poster_db.Users VALUES('"+user.getMail()+"','"+user.getPass() +"','"+user.getImageUrl() +"');";
-		     int result = statement.executeUpdate(query);
+		      String query ="INSERT INTO poster_db.Users VALUES('"+user.getMail()+"','"+user.getPass() +"','"+user.getImageUrl() +"',"+0+");";
+		      System.out.println(query);
+		      int result = statement.executeUpdate(query);
 		      if(result == 1)
 		    	  status = true;
 		      
@@ -84,6 +108,27 @@ public class DataBaseProvider {
 		    }
 		  return status;
 	  }
+	  
+	  public boolean validateUser(String email) throws Exception {
+		  try {
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "UPDATE Users SET isValid= 1 WHERE mail='"+ email +"';";
+		      System.out.println(query);
+		      int result = statement.executeUpdate(query);
+		      if(result != 1){
+		    	System.out.println("Error setUserImageUrl "); 
+		      	return false;
+		      }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		      close();
+		    }
+		  return true;
+	  }
+	  
 	  public User getUser (String mail) throws Exception
 	  {
 		  User user = null;
@@ -127,15 +172,16 @@ public class DataBaseProvider {
 		      statement = connect.createStatement();
 		      String query = "SELECT userMail, postText, likes, postDate, postId FROM Posts WHERE postId < "+ endIndex +" AND postId > " + startIndex +";";
 		      System.out.println(query);
-		      resultSet = statement.executeQuery(query);
-		      System.out.println(resultSet);
-		      while (resultSet.next()) {
+		      ResultSet tempResultSet = statement.executeQuery(query);
+		      System.out.println(tempResultSet);
+		      while (tempResultSet.next()) {
 		    	  temPost = new Post();
-		    	  temPost.setUser(this.getUser(resultSet.getString("userMail")));
-		    	  temPost.setPostText(resultSet.getString("postText"));
-		    	  temPost.setLikes(stringToLikes(resultSet.getString("likes")));
-		    	  temPost.setPostDate(dateFromString(resultSet.getString("postDate")));
-		    	  temPost.setPostId(resultSet.getLong("postId"));
+		    	  temPost.setUser(this.getUser(tempResultSet.getString("userMail")));
+		    	  temPost.setPostText(tempResultSet.getString("postText"));
+		    	  temPost.setLikes(stringToLikes(tempResultSet.getString("likes")));
+		    	  temPost.setPostDate(dateFromString(tempResultSet.getString("postDate")));
+		    	  temPost.setPostId(tempResultSet.getLong("postId"));
+		    	  temPost.setComents(getComentsForPost((int)temPost.getPostId()));
 		    	  System.out.println(temPost);
 		    	  posts.add(temPost);
 			    }
@@ -146,6 +192,55 @@ public class DataBaseProvider {
 		      close();
 		    }
 		  return posts;
+	  }
+	  
+	  public Post getPost( int id) throws Exception
+	  {
+		  System.out.println("get post with id: "+id);
+		  Post temPost = null;
+		  try {
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "SELECT userMail, postText, likes, postDate, postId FROM Posts WHERE postId = "+ id +";";
+		      System.out.println(query);
+		       ResultSet set = statement.executeQuery(query);
+		      while (set.next()) {
+		    	  temPost = new Post();
+		    	  temPost.setUser(this.getUser(set.getString("userMail")));
+		    	  temPost.setPostText(set.getString("postText"));
+		    	  temPost.setLikes(stringToLikes(set.getString("likes")));
+		    	  temPost.setPostDate(dateFromString(set.getString("postDate")));
+		    	  temPost.setPostId(set.getLong("postId"));
+			    }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		      close();
+		    }
+		  return temPost;
+	  }
+	  
+	  public boolean isValideUser( String email) throws Exception
+	  {
+		  System.out.println("isValideUser: "+email);
+		  boolean isValid = false;
+		  try {
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "SELECT isValid FROM Users WHERE mail = '"+ email +"';";
+		      System.out.println(query);
+		      ResultSet set = statement.executeQuery(query);
+		      while (set.next()) {
+		    	   isValid = set.getBoolean("isValid");
+			    }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		      close();
+		    }
+		  return isValid;
 	  }
 	  
 	  public Date dateFromString(String dateString) throws ParseException{
@@ -165,6 +260,15 @@ public class DataBaseProvider {
 			likes.add(parts[i]);  
 		  }
 		  return likes;
+	  }
+	  
+	  public String likesToString(ArrayList<String> likes)
+	  {
+		  String likesStr = "";
+		  for (String like:likes){
+			  likesStr += like;
+		  }
+		  return likesStr;
 	  }
 	  
 	  public boolean setUserImageUrl (String mail, String imageUrl) throws Exception
@@ -188,6 +292,105 @@ public class DataBaseProvider {
 		  return true;
 	  }
 	  
+	  public boolean likePost(int id, String userMail) throws Exception{
+		  
+		  Post post = this.getPost(id);
+		  String likes = this.likesToString(post.getLikes());
+		  likes = likes + userMail + ",";
+		  try {
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "UPDATE Posts SET likes='"+ likes +"' WHERE postId='"+ id +"';";
+		      System.out.println(query);
+		      int result = statement.executeUpdate(query);
+		      if(result != 1){
+		    	System.out.println("Error liking "); 
+		      	return false;
+		      }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		      close();
+		    }
+		  return true;
+		  
+	  }
+	  
+public boolean addComent(Coment coment) throws Exception{
+	int nextComentId = getNextMaxComentId();
+	boolean status = false;
+	  try {
+	      connect = connect();
+	      statement = connect.createStatement();
+	      String query ="INSERT INTO poster_db.Coments VALUES('"+coment.getUserMail()+"','"+coment.getComentText() +"', NOW() ,"+coment.getPostId() +","+ nextComentId +");";
+	      System.out.println(query);
+	      int result = statement.executeUpdate(query);
+	      if(result == 1)
+	    	  status = true;
+	      
+	    } catch (Exception e) {
+	      throw e;
+	    } finally {
+	      close();
+	    }
+	  return status;
+}
+
+public ArrayList<Coment> getComentsForPost(int id) throws Exception{
+	ArrayList<Coment> coments = new ArrayList<Coment>();
+	Coment tempComent;
+	try {
+		  connect = connect();
+	      statement = connect.createStatement();
+	      String query = "SELECT userMail, comentText, postId, date FROM Coments WHERE postId = '"+ id +"';";
+	      System.out.println(query);
+	      ResultSet result = statement.executeQuery(query);
+	      while (result.next()) {
+	    	  tempComent = new Coment();
+	    	  tempComent.setUserMail(result.getString("userMail"));
+	    	  tempComent.setComentText(result.getString("comentText"));
+	    	  tempComent.setPostId(result.getLong("postId"));
+	    	  tempComent.setDate(dateFromString(result.getString("date")));
+	    	  coments.add(tempComent);
+		    }
+	      
+	    } catch (Exception e) {
+	      throw e;
+	    } finally {
+	      close();
+	    }
+	
+	return coments;
+}
+	  
+public boolean disLikePost(int id, String userMail) throws Exception{
+		  
+		  Post post = this.getPost(id);
+		  String likes = this.likesToString(post.getLikes());
+		  likes = likes.replace(userMail,"");
+		  try {
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "UPDATE Posts SET likes='"+ likes +"' WHERE postId='"+ id +"';";
+		      System.out.println(query);
+		      int result = statement.executeUpdate(query);
+		      if(result != 1){
+		    	System.out.println("Error liking "); 
+		      	return false;
+		      }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		      close();
+		    }
+		  return true;
+		  
+	  }
+	  
+
+
 	  public static Connection connect()
 	  {
 	      try

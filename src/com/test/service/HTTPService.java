@@ -55,33 +55,25 @@ public class HTTPService {
 	 resource = new DataBase(); 
  }
  
-@GET
- @Path("validate")
- @Produces(MediaType.TEXT_PLAIN)
- public void validateUserHTTPHeaderPost() throws Exception{
-  if(this.resource == null){
- 	 this.createResource();
-  }
-  
-  try{
-   // Get the Authorisation Header from Request
-   String header = request.getParameter("code"); // must me Authentication
-
-   System.out.println("Validate user: "+header);
-   resource.setValidUser(header);
-   
-  }catch(Exception e){
-   e.printStackTrace();
-  }
- }
-
-@GET
-@Path("hui")
-@Produces(MediaType.TEXT_PLAIN)
-public String hello() {
-
-		return "Hello Jersey";
-}
+//@GET
+// @Path("validate")
+// @Produces(MediaType.TEXT_PLAIN)
+// public void validateUserHTTPHeaderPost() throws Exception{
+//  if(this.resource == null){
+// 	 this.createResource();
+//  }
+//  
+//  try{
+//   // Get the Authorisation Header from Request
+//   String header = request.getParameter("code"); // must me Authentication
+//
+//   System.out.println("Validate user: "+header);
+//   resource.setValidUser(header);
+//   
+//  }catch(Exception e){
+//   e.printStackTrace();
+//  }
+// }
 
 
 @POST
@@ -199,14 +191,14 @@ public String registerHTTPHeaderPost(String x) throws Exception{
   decoded = header;
    String [] dataArray = decoded.split("#");
    
-  user.setId(dataArray[0]);
+  user.setMail(dataArray[0]);
   user.setPass(dataArray[1]);
   if(resource.addNewUserAndData(user, "")){
 	  status = "suc";
 	  SendEmail emailSender = new SendEmail();
 	  emailSender.subject = "Email validation";
-	  emailSender.setRecipient(user.getId());
-	  emailSender.setMessage( "http://localhost:8080/RestApi/auth/validate?code="+user.getId());
+	  emailSender.setRecipient(user.getMail());
+	  emailSender.setMessage( "http://localhost:8080/RestApi/auth/validate?code="+user.getMail());
 	  emailSender.sendMessage();
 	  
   }
@@ -286,10 +278,10 @@ public String logOutHttps(String x) throws Exception {
 
 
 @POST
-@Path("validateUser")
+@Path("isValidUser")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public User validateUser(User usr) throws Exception {
+public User isValidUser(User usr) throws Exception {
 
 	if(tempResource == null){
 		tempResource = new TempResource();
@@ -301,6 +293,23 @@ public User validateUser(User usr) throws Exception {
 //		else
 //			return "NO";
 		return tempResource.isValidUserGetInstance(usr);
+}
+
+@GET
+@Path("validateUser")
+@Consumes(MediaType.APPLICATION_JSON)
+public String validateUser(String param) throws Exception {
+
+	
+	if(tempResource == null){
+		tempResource = new TempResource();
+	}
+
+	if(tempResource.validateUser(request.getParameter("email"))){
+		return "SUCCESS";
+		
+	}
+	return "Fail";
 }
 
 @POST
@@ -323,15 +332,20 @@ public String isSuchUser(User usr) throws Exception {
 @Consumes(MediaType.APPLICATION_JSON)
 public String register(User usr) throws Exception {
 	
-	if(tempResource == null){
-		tempResource = new TempResource();
+	if(tempResource.register(usr)){
+		System.out.println("register http");
+		
+		SendEmail emailSender = new SendEmail();
+		  emailSender.subject = "Email validation";
+		  emailSender.setRecipient(usr.getMail());
+		  emailSender.setMessage( "http://localhost:8080/RestApi/auth/validateUser?email="+usr.getMail());
+		  emailSender.sendMessage();
+		  
+		return "YES";
+		
 	}
-	System.out.println("register http");
-		if(tempResource.register(usr)){
-			return "YES";
-		}
-		else
-			return "NO";
+	return "NO";
+
 }
 
 @POST
