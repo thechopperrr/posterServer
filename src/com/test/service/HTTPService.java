@@ -328,6 +328,18 @@ public String isSuchUser(User usr) throws Exception {
 }
 
 @POST
+@Path("changePass")
+@Consumes(MediaType.APPLICATION_JSON)
+public String changePass(User usr) throws Exception {
+	
+	if(tempResource == null){
+		tempResource = new TempResource();
+	}
+		return tempResource.changePass(usr);
+}
+
+
+@POST
 @Path("register")
 @Consumes(MediaType.APPLICATION_JSON)
 public String register(User usr) throws Exception {
@@ -393,6 +405,7 @@ public String makeComent(Coment com) throws Exception {
 @Consumes(MediaType.APPLICATION_JSON)
 public String makePost(Post post) throws Exception {
 	
+	System.out.println("making post:" + post.getPostText());
 	if(tempResource == null){
 		tempResource = new TempResource();
 	}

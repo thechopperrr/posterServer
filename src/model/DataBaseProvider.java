@@ -153,6 +153,47 @@ public class DataBaseProvider {
 		  return user;
 	  }
 	  
+	  public String getPassForUser (String mail) throws Exception
+	  {
+		  String pass = "";
+		  try {
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "SELECT  pass FROM Users WHERE mail = '"+ mail +"';";
+		      System.out.println(query);
+		      ResultSet result = statement.executeQuery(query);
+		      while (result.next()) {
+			      pass = result.getString("pass");
+			    }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		      close();
+		    }
+		  return pass;
+	  }
+	  
+	  public boolean changePassForUser(User user) throws Exception{
+		  try {
+			  connect = connect();
+		      statement = connect.createStatement();
+		      String query = "UPDATE Users SET pass='"+ user.getPass() +"' WHERE mail='"+ user.getMail() +"';";
+		      System.out.println(query);
+		      int result = statement.executeUpdate(query);
+		      if(result != 1){
+		    	System.out.println("Error setUserImageUrl "); 
+		      	return false;
+		      }
+		      
+		    } catch (Exception e) {
+		      throw e;
+		    } finally {
+		      close();
+		    }
+		  return true;
+	  }
+	  
 	  public ArrayList<Post> getNextFivePosts( int index) throws Exception
 	  {
 		  System.out.println("get nex five with index: "+index);

@@ -156,6 +156,17 @@ public boolean isSuchUser(String name) throws Exception{
 	return true;
 }
 
+public String getPassForUser(String mail) throws Exception{
+	return dataBase.getPassForUser(mail);
+}
+
+public String changePass(User user) throws Exception{
+	if(dataBase.changePassForUser(user)){
+		return "YES";
+	}
+	return "NO";
+}
+
 public boolean register(User usr) throws Exception{
 	
 	User tempUser = dataBase.getUser(usr.getMail());
@@ -167,17 +178,6 @@ public boolean register(User usr) throws Exception{
 	else {
 		System.out.println("user exists");
 		return false;
-	}
-}
-
-public String getPassForUser(String email) throws Exception{
-	System.out.println("getPassForUser");
-	User tempUser = dataBase.getUser(email);
-	if( tempUser == null){
-		return "error";
-	}
-	else {
-		return tempUser.getPass();
 	}
 }
 
